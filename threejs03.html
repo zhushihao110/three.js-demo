@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>画网格</title>
+    <script src="js/three.js"></script>
+    <style>
+        #threejs{
+            width: 800px;
+            height: 800px;
+            margin: 0 auto;
+            background-color: skyblue;
+        }
+    </style>
+</head>
+<body>
+    <div id="threejs"></div>
+    <script type = "text/javascript">
+        // 使用封装写法，利于代码维护，查看
+        window.onload = function () {
+            // 获取盒子
+            var body = document.getElementById("threejs")
+
+            // 初始化renderer
+            var renderer
+            function initThree () {
+                width = body.clientWidth
+                height = body.clientHeight
+                renderer = new THREE.WebGLRenderer({
+                    antialias : true
+                });
+                renderer.setSize(width, height);
+                body.appendChild(renderer.domElement)
+                renderer.setClearColor("skyblue", 1.0);
+            }
+            // 初始化相机
+            var camera
+            function initCamera () {
+                camera = new THREE.PerspectiveCamera(45, width / height, 1, 10000);
+                camera.position.x = 0;
+                camera.position.y = 1000;
+                camera.position.z = 0;
+                camera.up.x = 0;
+                camera.up.y = 0;
+                camera.up.z = 1;
+                camera.lookAt(0, 0, 0);
+            }
+            // 初始化场景
+            var scene
+            function initScene () {
+                scene = new THREE.Scene();
+            }
+
+            var light;
+            function initLight() {
+                light = new THREE.DirectionalLight(0xFF0000, 1.0, 0);
+                light.position.set(100, 100, 200);
+                scene.add(light);
+            }
+            // 画线 集合成网格 操作
+            function initObject() {
+                // 创建几何体
+                var geometry = new THREE.Geometry();
+                // 材质
+                var material = new THREE.LineBasicMaterial( { vertexColors: true } );
+                // 创建颜色
+                var color1 = new THREE.Color( "red" );
+                var color2 = new THREE.Color( "blue" );
+
+                // 线的材质可以由2点的颜色决定  创建两个点 设置点的颜色
+                var p1 = new THREE.Vector3( -500, 0, 0 );
+                var p2 = new THREE.Vector3(  500, 0, 0 );
+                geometry.vertices.push(p1);
+                geometry.vertices.push(p2);
+                geometry.colors.push( color1, color2 );
+                for(var i = 0; i<= 20; i++) {
+                    //创建线 沿着Z轴平移  
+                    var line1 = new THREE.Line( geometry, material, THREE.LineSegments );
+                    line1.position.z = (i * 50) - 500;
+                    scene.add(line1);
+                    // 创建线  先沿着Y轴旋转90度, 再沿着X轴平移 与上面的线相交 形成网格
+                    var line2 = new THREE.Line( geometry, material, THREE.LineSegments );
+                    line2.position.x = ( i * 50 ) - 500;
+                    line2.rotation.y = 90 * Math.PI / 180;
+                    scene.add(line2);
+                }
+            }
+            // 运行
+            function threeStart() {
+                initThree();
+                initCamera();
+                initScene();
+                initLight();
+                initObject();
+                renderer.clear();
+                renderer.render(scene, camera);
+            }
+            
+            threeStart()
+        }
+    </script>
+</body>
+</html>
